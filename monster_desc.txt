@@ -1,0 +1,42 @@
+RLG327 MONSTER DESCRIPTION 1
+BEGIN MONSTER
+NAME Junior Barbarian
+SYMB p
+COLOR BLUE
+DESC
+A young barbarian wielding a wooden sword.
+.
+SPEED 7+1d4
+DAM 0+1d4
+HP 12+2d6
+RRTY 100
+ABIL SMART
+END
+
+BEGIN MONSTER
+NAME Goblin Stabber
+SYMB g
+COLOR GREEN
+DESC
+A sneaky goblin with a rusty blade.
+.
+SPEED 10+1d2
+DAM 3+1d4
+HP 8+1d3
+RRTY 80
+ABIL SMART ERRATIC
+END
+
+BEGIN MONSTER
+NAME Stone Golem
+SYMB G
+COLOR WHITE
+DESC
+A slow-moving giant made of stone.
+.
+SPEED 4+1d3
+DAM 10+2d6
+HP 30+4d10
+RRTY 50
+ABIL TUNNEL DESTROY
+END

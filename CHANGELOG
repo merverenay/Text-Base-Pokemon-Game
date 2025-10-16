@@ -1,0 +1,168 @@
+CHANGELOG - Dungeon Generation Project
+
+[2025-01-28] - Started Project
+Initialized dungeon generator project structure.
+Created dungeon grid with immutable borders.
+
+[2025-01-28] - Room Placement
+Implemented random room generation with size constraints.
+Added room overlap prevention logic.
+
+[2025-01-29] - Corridor Connection
+Developed initial corridor connection using the nearest-neighbor algorithm.
+Verified dungeon connectivity through random points.
+
+[2025-01-29] - MST Implementation
+Replaced greedy room connection with Minimum Spanning Tree (MST) algorithm.
+Improved corridor paths with randomized zigzagging for natural layout.
+
+[2025-01-30] - Staircase Placement
+Ensured placement of at least one up (<) and one down (>) staircase.
+Added randomness for extra staircases while avoiding overlap.
+
+[2025-02-03] - Hardness Matrix
+Implemented hardness matrix to support future digging mechanics.
+Assigned hardness values to walls, rooms (0), and corridors (0).
+
+ [2025-02-8] - Save & Load System
+-Implemented ave/load functionality:
+Saves the dungeon grid, room data, PC position, and staircases.
+Uses `~/.rlg327/dungeon` as the default save location.
+Supports error handling for corrupt or missing save files.
+Ensured grid consistency between saved and loaded dungeons.
+
+[2025-02-09] - PC Placement & Validation
+Introduced pc(`@`) placement** logic:
+Default placement inside the first valid room
+Validates pc position when loading from a saved dungeon.
+If invalid, finds a new spawn location inside a room.
+
+
+[2025-02-10] - Corridor Drawing Fixes
+Fixed corridor overlap bugs when connecting rooms.
+Allowed corridors to slightly wiggle for a more organic look.
+Prevented corridors from erasing staircases.
+
+[2025-02-11] - Dungeon Generation Optimization
+Increased room generation attempts for better distribution.
+Improved room placement efficiency to avoid excessive failures.
+Ensured at least `MIN_ROOMS` are placed before dungeon finalization
+
+[2025-02-12] - Final Adjustments
+Cleaned up code, improved function documentation.
+Updated Makefile for cleaner compilation.
+Prepared final submission package.
+
+[2025-02-20] - Pathfinding for Monsters
+Implemented Dijkstra’s Algorithm for pathfinding.
+Added non-tunneling monster distance map.
+Added tunneling monster distance map using hardness values.
+Ensured non-tunneling monsters avoid walls and move optimally.
+Tunneling monsters dig through walls based on hardness cost.
+
+[2025-02-23] - Pathfinding for Monsters
+Implemented Dijkstra’s Algorithm for pathfinding.
+Added non-tunneling monster distance map.
+Added tunneling monster distance map using hardness values.
+Ensured non-tunneling monsters avoid walls and move optimally.
+Tunneling monsters dig through walls based on hardness cost.
+
+[2025-02-24] - Final Adjustments
+Cleaned up code and improved function documentation.
+Updated Makefile for cleaner compilation.
+Prepared final submission package.
+
+
+
+[2025-02-26] - Monster Generation & Behavior
+Implemented --nummon switch to specify the number of monsters.
+Defaulted monster count to 10 if --nummon is not provided.
+Assigned hexadecimal identifiers (0-9, a-f) to monsters based on their AI behavior.
+Implemented random monster placement in valid dungeon rooms.
+Ensured monsters do not spawn on the PC’s position.
+[2025-03-01] - Monster AI & Movement
+Implemented Intelligent monsters that use Dijkstra’s algorithm for shortest pathfinding.
+Implemented Telepathic monsters that always know the PC’s location.
+Implemented Tunneling monsters that dig through walls by reducing hardness.
+Implemented Erratic monsters that move randomly 50% of the time.
+Added logic for non-telepathic monsters to follow the last known PC position.
+Implemented pc_alive() to check if the PC is still in the game.
+Ensured monsters take turns using a priority queue event system.
+[2025-03-2] - PC Movement & Event Processing
+Added PC movement via user input (WASD).
+Ensured PC cannot move through immutable walls.
+Allowed PC to bore through regular walls, converting them to corridors.
+Integrated PC into the priority queue turn system.
+Implemented process_events() to handle both PC and monster turns.
+Added win/loss conditions:
+PC wins if all monsters are eliminated.
+PC loses if a monster moves into its position.
+[2025-03-05] - Dungeon Rendering & Debugging
+Optimized dungeon rendering for real-time updates.
+Improved debug logging for monster movement, pathfinding, and event processing.
+Ensured dungeon redraws after each move for clear gameplay visibility.
+Added usleep(250000); to slow updates for observation.
+
+[2025-04-07] - Monster Template Parsing
+- Implemented support for loading monster definitions from `monster_desc.txt`.
+- Replaced hardcoded/random monster generation with parsed templates.
+- Each monster template includes name, description, symbol, color, speed, damage, HP, rarity, and abilities.
+- Monsters are instantiated at runtime using values rolled from dice expressions (e.g., `10+2d4`).
+- Abilities like SMART, TELE, TUNNEL, ERRATIC, etc., now come from parsed fields.
+- Added `--parse-monsters` mode to print parsed monsters for TA verification.
+- Ensured monsters spawn based on rarity probability.
+- Supported fallback message if no valid templates are loaded.
+
+[2025-04-13] – Object Template Parsing and Instantiation
+Implemented support for loading object definitions from object_desc.txt.
+Created ObjectDescription class as a factory for generating object instances.
+Added Object class for instantiated dungeon items with rolled stats from dice expressions (e.g., 10+2d4).
+Only damage remains a Dice object in instances; all other fields are rolled to integers.
+Objects now include fields such as name, color, symbol, type, rarity, and artifact status.
+Instantiated objects are placed randomly in dungeon rooms (but not on PC).
+Artifact uniqueness is enforced: only one instance can ever be generated.
+Colored rendering added using ncurses color pairs (e.g., red potions appear in red).
+Updated dungeon rendering logic to layer PC over objects, and preserve object visibility after movement.
+Added generatedArtifacts tracking to prevent multiple artifact spawns.
+Proper cleanup added: object memory is freed before dungeon regeneration or game exit.
+
+[2025-04-22] – PC Equipment, Inventory, and Combat Update
+
+Added support for 12 equipment slots: WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, and two RING slots.
+Added 10 inventory carry slots (0–9), separate from equipped items.
+Implemented equipment-based speed and damage modifiers.
+Added PC base damage as 0+1d4 if no weapon equipped.
+
+Updated combat to be multi-round:
+PC and monsters now have HP and damage stats.
+Combat triggers when PC attempts to move into a monster’s tile.
+Damage is calculated by rolling all equipped item dice plus base.
+Monster dies when HP <= 0 and is removed from the dungeon.
+PC dies when HP <= 0 and the game ends.
+
+[2025-04-21]
+Implemented the following inventory commands:
+
+i: Show inventory
+e: Show equipped items
+w: Wear item from inventory
+t: Take off equipped item
+d: Drop item to floor
+x: Expunge item from inventory
+I: Inspect item in inventory
+
+[2025-04-23]
+Implemented L command to target and inspect visible monsters.
+Movement keys used to move cursor
+Pressing t on a monster displays its stats and abilities
+Ensured safe handling of invalid inputs, full inventories, and swap logic.
+Integrated all combat, item, and inspection features with existing ncurses UI.
+
+[2025-04-29] – Inspection and HP Regeneration Features
+
+Enhanced L command to inspect both monsters and items on targeted tiles.
+Pressing t on a monster shows symbol, HP, speed, color, and abilities.
+Pressing t on an item shows name, symbol, color, and description.
+Implemented PC HP regeneration: regains 1 HP every 20 turns if HP < 50.
+Output message displays regenerated HP with updated total.
+Ensured integration with turn system and proper UI updates via mvprintw.

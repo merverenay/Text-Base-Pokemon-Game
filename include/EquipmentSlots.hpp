@@ -1,0 +1,21 @@
+#ifndef EQUIPMENT_SLOTS_HPP
+#define EQUIPMENT_SLOTS_HPP
+
+enum EquipmentSlot
+{
+    SLOT_WEAPON = 0,
+    SLOT_OFFHAND,
+    SLOT_RANGED,
+    SLOT_ARMOR,
+    SLOT_HELMET,
+    SLOT_CLOAK,
+    SLOT_GLOVES,
+    SLOT_BOOTS,
+    SLOT_AMULET,
+    SLOT_LIGHT,
+    SLOT_RING1,
+    SLOT_RING2,
+    SLOT_COUNT // total 12 slots
+};
+
+#endif // EQUIPMENT_SLOTS_HPP

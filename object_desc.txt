@@ -1,0 +1,41 @@
+RLG327 OBJECT DESCRIPTION 1
+
+BEGIN OBJECT
+NAME Healing Potion
+DESC
+A small glass vial containing a glowing red liquid.
+.
+TYPE FLASK
+COLOR RED
+HIT 0+0d0
+DODGE 0+0d0
+DEF 0+0d0
+WEIGHT 1+0d1
+SPEED 0+0d0
+ATTR 0+0d0
+VAL 10+2d4
+DAM 0+0d0
+ART 0
+RRTY 100
+SYMB !
+END
+
+BEGIN OBJECT
+NAME Ring of Speed
+DESC
+A silver ring engraved with lightning bolts.
+.
+TYPE RING
+COLOR CYAN
+HIT 0+0d0
+DODGE 0+0d0
+DEF 0+0d0
+WEIGHT 1+0d1
+SPEED 5+1d2
+ATTR 0+0d0
+VAL 50+5d10
+DAM 0+0d0
+ART 0
+RRTY 50
+SYMB =
+END
