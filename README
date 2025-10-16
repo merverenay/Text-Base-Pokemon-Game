@@ -1,132 +1,180 @@
+# 🧱 Dungeon Game (C + ncurses)
 
+This project implements a **Dungeon Generator** in C that creates a **procedurally generated dungeon** with rooms, corridors, and staircases, ensuring connectivity between all rooms.  
+It also includes **monster AI**, **pathfinding**, **inventory management**, and an **interactive ncurses-based terminal UI**.
 
-This project implements a Dungeon Generator in C that creates a procedurally generated dungeon 
-with rooms, corridors, and staircases, ensuring connectivity between all rooms.
+---
 
-The dungeon is displayed as an ASCII grid:
-- **`.`** : Rooms
-- **`#`** : Corridors
-- **`<`** : Up staircases
-- **`>`** : Down staircases
-- **` `** : Rock (walls)
+## 🗺️ Dungeon Overview
 
-## Features
-Random Room Placement: Ensures non-overlapping rooms within a bounded grid.
-Minimum Spanning Tree (MST) Corridor Connection: Connects rooms using an MST algorithm for efficiency.
-Corridor Zigzagging: Adds randomized movement to corridors for a more natural layout.
-Staircase Placement: Ensures at least one up and down staircase in different rooms.
-Dungeon Hardness Matrix: Implements hardness levels for walls and floors to support future pathfinding.
-Dungeon Save/Load System: Allows saving and loading the dungeon state to/from a file.
+The dungeon is displayed as an **ASCII grid**:
 
-Pathfinding for Monsters: Implements Dijkstra’s Algorithm for:
-Non-tunneling monsters, which navigate through walkable spaces.
-Tunneling monsters, which calculate movement costs based on wall hardness.
+| Symbol | Meaning         |
+|:-------:|:----------------|
+| `.`     | Room floor      |
+| `#`     | Corridor        |
+| `<`     | Up staircase    |
+| `>`     | Down staircase  |
+| ` `     | Rock / Wall     |
 
-Monster Generation & AI Behavior
-The number of monsters is set via --nummon (default: 10).
-Each monster has a hexadecimal identifier (0-9, a-f) that represents its behavior.
-Each monster has a speed between 5-20.
-Each monster has a priority queue event for movement.
+---
 
-Monster AI Types Implemented:
-Intelligence (0x1 bit): Smart monsters use Dijkstra's algorithm for shortest pathfinding.
-Telepathy (0x2 bit): Always knows where the PC is.
-Tunneling (0x4 bit): Can dig through walls by reducing hardness.
-Erratic (0x8 bit): Moves randomly 50% of the time.
+## ⚙️ Features
 
-Pathfinding Using Dijkstra's Algorithm
-Two separate maps for tunneling and non-tunneling monsters.
-Monsters use the shortest path according to their abilities. with pc movement these update
+### 🏗️ Dungeon Generation
+- **Random Room Placement:** Ensures non-overlapping rooms within a bounded grid.  
+- **MST Corridor Connection:** Connects rooms using a Minimum Spanning Tree algorithm for efficiency.  
+- **Corridor Zigzagging:** Adds randomized variation for a more natural layout.  
+- **Staircase Placement:** Guarantees at least one up and one down staircase in separate rooms.  
+- **Hardness Matrix:** Assigns hardness levels for walls and floors to support tunneling and pathfinding.  
+- **Save/Load System:** Supports saving and loading the dungeon state from a file.
 
-The game runs as a discrete event simulator.
-Characters (PC and monsters) act based on speed.
-Each entity generates an event when created.
-Priority queue determines movement order based on 1000/speed.
+---
 
-Ncurses User Interface: Provides real-time visual feedback, handles unbuffered input, and redraws automatically.
+### 👾 Monster AI & Pathfinding
+- **Dijkstra’s Algorithm:** Used for both tunneling and non-tunneling monsters.  
+- **Non-tunneling monsters:** Navigate only through walkable paths.  
+- **Tunneling monsters:** Dig through walls based on hardness values.  
 
-PC Manual Control: Move PC using Vim-like keys (ykuhlnbj) or numeric keypad (12346789), including >, <, m, and Q.
+#### Monster Generation
+- Default: `--nummon 10` (up to 20)
+- Each monster:
+  - Has a **hexadecimal ID** (0–9, a–f)
+  - Moves according to a **priority queue** based on speed (1000/speed)
+  - Has a speed between **5–20**
 
-Staircase Transitions: Moving onto > or < and pressing the corresponding key regenerates the dungeon with a new layout and monsters.
+#### Monster AI Types
+| Bit | Ability | Description |
+|:----:|:----------|:-------------|
+| 0x1 | Intelligence | Uses Dijkstra’s algorithm for shortest path |
+| 0x2 | Telepathy | Always knows PC’s location |
+| 0x4 | Tunneling | Can dig through walls |
+| 0x8 | Erratic | Moves randomly 50% of the time |
 
-Monster List View (m key):Pressing m displays a scrollable list of monsters using ncurses.Shows distance and direction from PC.Use up/down arrows or w/s to scroll, q to exit.
+---
 
-Fog of War `f`:  
-Toggle visibility. When enabled, only tiles within the PC’s light radius are shown. Previously seen areas are remembered.
- 
-Teleportation Mode`g`:  
-Press `g` to enter teleport mode. Move the cursor using movement keys.  
-Press `g` again to teleport to the selected location (valid tiles only).  
-Press `r` for random teleportation.  
-Press `ESC` to cancel teleport mode.
+### 🧭 Pathfinding
+- Maintains **two Dijkstra maps:** one for tunneling and one for non-tunneling monsters.  
+- Updates dynamically with PC movement and dungeon changes.  
 
-Implemented parsing of object templates from object_desc.txt, including support for fields like NAME, DESC, COLOR, TYPE, SYMB, and all 8 dice attributes.
+---
 
-Added ObjectDescription class as a factory for creating Object instances.
+## 🎮 Gameplay Features
 
-Created Object class to represent instantiated items placed in the dungeon.
+### ⚔️ Turn-Based Simulation
+- Each entity (PC or monster) acts based on its **speed**.  
+- A **priority queue** manages event order for movement and combat.
 
-Rolled values for all dice attributes except DAM during instantiation; DAM remains as a Dice object.
+---
 
-Ensured artifacts are only generated once per game session using generatedArtifacts set.
+### 💻 Ncurses User Interface
+- Provides **real-time rendering**, **keyboard input**, and **automatic screen updates**.  
+- Interactive terminal-based UI for movement, combat, and menus.  
 
-Objects are placed randomly in rooms and rendered with correct colors and symbols using ncurses.
+### 🎮 PC Controls
+| Key | Action |
+|:----:|:-----------------------------|
+| `ykuhlnbj` or numpad `12346789` | Move |
+| `>` / `<` | Use staircase |
+| `m` | Open monster list |
+| `f` | Toggle fog of war |
+| `g` | Enter teleport mode |
+| `r` | Random teleport |
+| `Q` | Quit game |
 
-Integrated object rendering into drawDungeon(), supporting overlap with player and monsters.
+---
 
-Cleaned up dynamically allocated objects when regenerating the dungeon or quitting the game.
+### 🔦 Fog of War
+- Shows only tiles within PC’s light radius.  
+- Previously seen areas remain visible in memory.  
 
-PC Inventory & Equipment
-Inventory: 10 carry slots (0–9).
+---
 
-Equipment: 12 slots (a–l), one for each item type:
+### 🧍 Teleportation Mode (`g`)
+- Move cursor using direction keys.  
+- Press `g` again to teleport to the selected location.  
+- Press `r` for random teleport.  
+- Press `ESC` to cancel.  
 
-WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RING 1, RING 2
+---
 
-Key	Function
-i	View PC inventory.
-e	View equipped items.
-w	Wear item from inventory (swap if slot occupied).
-t	Take off item (returns to inventory).
-d	Drop item on the floor.
-x	Expunge item from the game.
-I	Inspect item in inventory.
-L	Look at a monster (target with movement keys, press t to view details).
+## 💎 Objects & Items
 
-Multi-round Combat: PC and monsters now have hitpoints.
+- Implemented **object template parsing** from `object_desc.txt`.  
+- Fields supported: `NAME`, `DESC`, `COLOR`, `TYPE`, `SYMB`, and all 8 dice attributes.  
+- Added `ObjectDescription` class as a factory for item generation.  
+- Ensured **unique artifact generation** using `generatedArtifacts` set.  
+- Objects are rendered with correct **symbols and colors** via ncurses.  
 
-Bare-handed Damage: PC deals 0+1d4 if no weapon is equipped.
+---
 
-Equipment Damage: All equipped item damage dice are rolled and added.
+## 🎒 PC Inventory & Equipment
 
-Speed Bonus: Equipment speed bonuses are added to the PC’s base speed (10).
+### Inventory
+- 10 carry slots (`0–9`)
 
-PC Death: Game ends when PC’s HP drops below 0.
+### Equipment
+- 12 equipment slots (`a–l`):
+  - WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RING1, RING2  
 
-Monster Death: Monster disappears from the dungeon when HP reaches 0.
+### Controls
+| Key | Function |
+|:----:|:-----------------------------|
+| `i` | View inventory |
+| `e` | View equipped items |
+| `w` | Wear item (swap if slot occupied) |
+| `t` | Take off item |
+| `d` | Drop item |
+| `x` | Expunge item permanently |
+| `I` | Inspect item |
+| `L` | Look mode (inspect monsters/items) |
 
-HP Regeneration
-PC Auto-Regenerates 1 HP every 20 turns.
-Regeneration only occurs if HP < max (50).
-Turn-based check is handled efficiently using lastHpRegenTurn.
-Updated L Press L to enter look mode.
-Use movement keys (h, j, k, l, etc.) to move the targeting cursor.
-If a monster is under the cursor, press t to view:
-Monster symbol, HP, speed, color, and abilities.
-If an item is under the cursor, press t to view:
-Item name, symbol, color, and description.
+---
 
+### 🩸 Combat System
+- Multi-round combat with **HP, speed, and damage calculations**.  
+- **Bare-handed Damage:** 0 + 1d4  
+- **Equipment Damage:** Rolls all equipped items’ dice.  
+- **Speed Bonus:** Equipment adds to base speed (10).  
+- **Monster/PC Death:** Entities are removed when HP ≤ 0.  
 
-##  Build & Run Instructions
+---
 
-###  Build the Project
+### ❤️ HP Regeneration
+- PC regenerates **1 HP every 20 turns** (up to max HP = 50).  
+- Tracked with `lastHpRegenTurn`.  
+
+---
+
+## 🧠 Look Mode (`L`)
+- Enter targeting mode with `L`.  
+- Use movement keys to move cursor.  
+- Press `t` to view:
+  - **Monster:** Symbol, HP, speed, color, and abilities.  
+  - **Item:** Name, symbol, color, and description.  
+
+---
+
+## 🛠️ Build & Run Instructions
+
+### 🧩 Build the Project
+```bash
 make
-
-### ▶Run the Game (Default: 10 Monsters)
+▶ Run the Game (Default: 10 Monsters)
+bash
+Copy code
 make run
-
-###  Run with Custom Monster Count
+⚙️ Custom Monster Count
+bash
+Copy code
 make run ARGS="--nummon 5"
+You can replace 5 with any number up to 20.
 
-You can replace `20` with any number from `1` to `MAX_MONSTERS` (default is 10, max is 20).
+🧑‍💻 Technologies Used
+Language: C
 
+Library: ncurses
+
+Algorithms: Dijkstra’s, MST, Priority Queue
+
+Paradigm: Procedural and Event-Driven Programming
